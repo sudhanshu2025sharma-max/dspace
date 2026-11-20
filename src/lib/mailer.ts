@@ -11,60 +11,240 @@ export interface SimpleSubmissionPayload {
   submittedAt: string;
 }
 
-interface MailResult {
+export interface MailDeliveryDetails {
+  submitterEmail: string;
+  submitterDelivered: boolean;
+  adminEmail: string;
+  adminDelivered: boolean;
+  simulated?: boolean;
+  messageIdSubmitter?: string;
+  messageIdAdmin?: string;
+}
+
+export interface MailResult {
   success: boolean;
   messageIdAdmin?: string;
   messageIdSubmitter?: string;
   error?: string;
+  errorType?: "AUTH_FAILED" | "CONFIG_MISSING" | "TIMEOUT" | "SEND_FAILED";
   simulated?: boolean;
+  details?: MailDeliveryDetails;
 }
 
+export interface MailConfigStatus {
+  configured: boolean;
+  simulated: boolean;
+  verified: boolean;
+  user?: string;
+  admin?: string;
+  message: string;
+  warning?: string;
+}
+
+/**
+ * Sanitizes and validates environment configuration for Gmail SMTP.
+ * Auto-corrects common copy-paste artifacts like 'your-foo@gmail.com' or 'admin-bar@gmail.com'.
+ */
+export function getSanitizedMailConfig() {
+  const rawUser = process.env.GMAIL_USER?.trim() || "";
+  const rawPass = process.env.GMAIL_APP_PASSWORD?.trim() || "";
+  const rawAdmin = process.env.ADMIN_EMAIL?.trim() || "";
+  const conferenceName =
+    process.env.CONFERENCE_NAME?.trim() || "DSpace Jubilee International Conference";
+
+  // Check if unconfigured or default placeholders
+  const isUserPlaceholder =
+    !rawUser || rawUser.toLowerCase() === "your-conference-email@gmail.com";
+  const isPassPlaceholder =
+    !rawPass ||
+    rawPass.toLowerCase() === "xxxx xxxx xxxx xxxx" ||
+    rawPass.toLowerCase() === "xxxxxxxxxxxxxxxx";
+
+  if (isUserPlaceholder || isPassPlaceholder) {
+    return {
+      configured: false,
+      reason:
+        "GMAIL_USER or GMAIL_APP_PASSWORD is not configured in .env.local. Running in simulation mode.",
+      user: "",
+      pass: "",
+      admin: "",
+      conferenceName,
+      warning: undefined,
+    };
+  }
+
+  // Auto-clean accidental 'your-' prefix (e.g., your-sudhanshu2025sharma@gmail.com -> sudhanshu2025sharma@gmail.com)
+  let user = rawUser;
+  let warning: string | undefined = undefined;
+
+  if (user.toLowerCase().startsWith("your-") && user.includes("@")) {
+    const cleaned = user.replace(/^your-/i, "");
+    console.warn(
+      `[MAILER] Auto-sanitized GMAIL_USER from '${user}' to '${cleaned}'. Update your .env.local to remove 'your-'.`
+    );
+    user = cleaned;
+    warning = "Auto-corrected 'your-' prefix from GMAIL_USER.";
+  }
+
+  // Auto-clean accidental 'admin-' prefix in ADMIN_EMAIL if it's an email address
+  let admin = rawAdmin || user;
+  if (admin.toLowerCase().startsWith("admin-") && admin.includes("@")) {
+    const cleaned = admin.replace(/^admin-/i, "");
+    console.warn(
+      `[MAILER] Auto-sanitized ADMIN_EMAIL from '${admin}' to '${cleaned}'. Update your .env.local to remove 'admin-'.`
+    );
+    admin = cleaned;
+  }
+
+  // Remove whitespace from 16-character Google App Password
+  const pass = rawPass.replace(/\s+/g, "");
+
+  return {
+    configured: true,
+    user,
+    pass,
+    admin,
+    conferenceName,
+    warning,
+  };
+}
+
+/**
+ * Creates a configured Nodemailer transporter with connection timeouts
+ */
+export function createMailTransporter() {
+  const config = getSanitizedMailConfig();
+  if (!config.configured) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: config.user,
+      pass: config.pass,
+    },
+    // Prevent request hanging indefinitely on network/proxy latency
+    connectionTimeout: 10000, // 10s
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  });
+}
+
+/**
+ * Verifies email configuration and tests SMTP connectivity
+ */
+export async function verifyMailConfig(): Promise<MailConfigStatus> {
+  const config = getSanitizedMailConfig();
+
+  if (!config.configured) {
+    return {
+      configured: false,
+      simulated: true,
+      verified: false,
+      message:
+        "Email credentials not yet set in .env.local. The application is running in local simulation mode (submissions will succeed without sending real emails).",
+    };
+  }
+
+  // Validate Google App Password length check (Google App Passwords are 16 letters)
+  if (config.pass.length !== 16) {
+    return {
+      configured: true,
+      simulated: false,
+      verified: false,
+      user: config.user,
+      admin: config.admin,
+      warning: config.warning,
+      message: `Invalid Google App Password length (${config.pass.length} chars). A valid Google App Password consists of exactly 16 letters without spaces (e.g., 'yxksszxuvivwbdrd'). Ensure 2-Step Verification is active and generate an App Password at https://myaccount.google.com/apppasswords.`,
+    };
+  }
+
+  const transporter = createMailTransporter();
+  if (!transporter) {
+    return {
+      configured: false,
+      simulated: true,
+      verified: false,
+      message: "Could not initialize mail transporter.",
+    };
+  }
+
+  try {
+    await transporter.verify();
+    return {
+      configured: true,
+      simulated: false,
+      verified: true,
+      user: config.user,
+      admin: config.admin,
+      warning: config.warning,
+      message: `Gmail SMTP service successfully verified and authenticated for ${config.user}.`,
+    };
+  } catch (err: any) {
+    const errorMsg = err?.message || String(err);
+    console.error("[MAILER VERIFY ERROR]", errorMsg);
+
+    let friendly = `Gmail SMTP connection check failed: ${errorMsg}`;
+    if (errorMsg.includes("535") || errorMsg.includes("Username and Password not accepted") || err?.code === "EAUTH") {
+      friendly = `Gmail Authentication Failed (535 5.7.8): Google rejected the username or App Password for '${config.user}'.\n• Verify Google 2-Step Verification is turned ON.\n• Generate a new 16-character App Password at https://myaccount.google.com/apppasswords.\n• Ensure GMAIL_USER in .env.local is exactly your Google account without extra prefixes.`;
+    } else if (err?.code === "ETIMEDOUT" || err?.code === "ESOCKET" || errorMsg.includes("timeout")) {
+      friendly = `Connection to Gmail SMTP timed out. Please check your network connection or firewall settings.`;
+    }
+
+    return {
+      configured: true,
+      simulated: false,
+      verified: false,
+      user: config.user,
+      admin: config.admin,
+      warning: config.warning,
+      message: friendly,
+    };
+  }
+}
+
+/**
+ * Sends confirmation email to submitter and alert dossier to conference admin.
+ */
 export async function sendSubmissionEmails(
   payload: SimpleSubmissionPayload
 ): Promise<MailResult> {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-  const adminEmail = process.env.ADMIN_EMAIL || gmailUser || "admin@example.com";
-  const conferenceName = process.env.CONFERENCE_NAME || "DSpace Jubilee Conference";
+  const config = getSanitizedMailConfig();
 
-  // If credentials are not yet configured in environment variables, run in simulated mode
-  if (!gmailUser || !gmailAppPassword) {
+  // If credentials are not configured, operate safely in simulation mode
+  if (!config.configured) {
     console.warn(
-      "[MAILER] GMAIL_USER or GMAIL_APP_PASSWORD not set. Running in local dry-run mode."
+      `[MAILER] Email credentials not configured. Proposal [${payload.submissionId}] logged in simulation mode.`
     );
     return {
       success: true,
       simulated: true,
+      details: {
+        submitterEmail: payload.email,
+        submitterDelivered: false,
+        adminEmail: config.admin || "unconfigured@local",
+        adminDelivered: false,
+        simulated: true,
+      },
       error:
-        "Submission received in local simulation mode. To dispatch live emails, add GMAIL_USER and GMAIL_APP_PASSWORD to your .env.local or Vercel Environment Variables.",
+        "Submission received in local simulation mode. Configure GMAIL_USER and GMAIL_APP_PASSWORD in .env.local to dispatch real emails.",
     };
   }
 
-  // Remove any whitespace from the 16-character Google App Password
-  const sanitizedPassword = gmailAppPassword.replace(/\s+/g, "");
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: sanitizedPassword,
-    },
-  });
-
-  // Verify connection
-  try {
-    await transporter.verify();
-  } catch (verifyErr: any) {
-    console.error("[MAILER VERIFY ERROR]", verifyErr?.message || verifyErr);
+  const transporter = createMailTransporter();
+  if (!transporter) {
     return {
       success: false,
-      error: `Gmail SMTP authentication failed. Please verify your 16-character App Password: ${
-        verifyErr?.message || "Invalid credentials"
-      }`,
+      errorType: "CONFIG_MISSING",
+      error: "Unable to create mail transporter. Please check your configuration.",
     };
   }
 
-  // 1. Email to Submitter
+  // 1. Prepare HTML template for Submitter
   const submitterHtml = `
     <!DOCTYPE html>
     <html>
@@ -87,13 +267,13 @@ export async function sendSubmissionEmails(
     <body>
       <div class="box">
         <div class="head">
-          <h1>${conferenceName}</h1>
+          <h1>${config.conferenceName}</h1>
           <p>Jubilee Celebration: Poster Submission Acknowledgment</p>
         </div>
         <div class="content">
           <div class="badge">Reference ID: ${payload.submissionId}</div>
           <p>Dear <strong>${payload.authorName}</strong>,</p>
-          <p>Thank you for submitting your poster proposal to the <strong>${conferenceName}</strong>. We have successfully logged your submission into the review register.</p>
+          <p>Thank you for submitting your poster proposal to the <strong>${config.conferenceName}</strong>. We have successfully logged your submission into the review register.</p>
           
           <div class="summary">
             <p><strong>Poster Title:</strong> ${payload.title}</p>
@@ -118,7 +298,7 @@ export async function sendSubmissionEmails(
     </html>
   `;
 
-  // 2. Email to Admin
+  // 2. Prepare HTML template for Admin
   const adminHtml = `
     <!DOCTYPE html>
     <html>
@@ -140,7 +320,7 @@ export async function sendSubmissionEmails(
       <div class="box">
         <div class="head">
           <h2>New Poster Submission [${payload.submissionId}]</h2>
-          <div style="font-size: 12px; opacity: 0.9;">${conferenceName}</div>
+          <div style="font-size: 12px; opacity: 0.9;">${config.conferenceName}</div>
         </div>
         <div class="content">
           <table class="table">
@@ -162,34 +342,72 @@ export async function sendSubmissionEmails(
   `;
 
   try {
-    // Send to Submitter
+    // Dispatch Submitter Email
     const subInfo = await transporter.sendMail({
-      from: `"${conferenceName}" <${gmailUser}>`,
+      from: `"${config.conferenceName}" <${config.user}>`,
       to: payload.email,
-      replyTo: adminEmail,
-      subject: `[${conferenceName}] Poster Submission Received: Ref ${payload.submissionId}`,
+      replyTo: config.admin,
+      subject: `[${config.conferenceName}] Poster Submission Received: Ref ${payload.submissionId}`,
       html: submitterHtml,
     });
 
-    // Send to Admin
-    const adminInfo = await transporter.sendMail({
-      from: `"${conferenceName} Portal" <${gmailUser}>`,
-      to: adminEmail,
-      replyTo: payload.email,
-      subject: `[Admin Alert] Poster Submission: ${payload.submissionId} - "${payload.title}"`,
-      html: adminHtml,
-    });
+    // Dispatch Admin Notification Email
+    let adminInfoMessageId: string | undefined = undefined;
+    try {
+      const adminInfo = await transporter.sendMail({
+        from: `"${config.conferenceName} Portal" <${config.user}>`,
+        to: config.admin,
+        replyTo: payload.email,
+        subject: `[Admin Alert] Poster Submission: ${payload.submissionId} - "${payload.title}"`,
+        html: adminHtml,
+      });
+      adminInfoMessageId = adminInfo.messageId;
+    } catch (adminErr: any) {
+      console.error("[MAILER ADMIN DISPATCH ERROR]", adminErr?.message || adminErr);
+      // We still acknowledge the submitter succeeded, but report admin notice failed
+    }
 
     return {
       success: true,
+      simulated: false,
       messageIdSubmitter: subInfo.messageId,
-      messageIdAdmin: adminInfo.messageId,
+      messageIdAdmin: adminInfoMessageId,
+      details: {
+        submitterEmail: payload.email,
+        submitterDelivered: true,
+        adminEmail: config.admin,
+        adminDelivered: Boolean(adminInfoMessageId),
+        simulated: false,
+        messageIdSubmitter: subInfo.messageId,
+        messageIdAdmin: adminInfoMessageId,
+      },
     };
   } catch (err: any) {
-    console.error("[MAILER ERROR]", err?.message || err);
+    const errorMsg = err?.message || String(err);
+    console.error("[MAILER SEND ERROR]", errorMsg);
+
+    let friendly = `Failed to send email notifications: ${errorMsg}`;
+    let errorType: MailResult["errorType"] = "SEND_FAILED";
+
+    if (errorMsg.includes("535") || errorMsg.includes("Username and Password not accepted") || err?.code === "EAUTH") {
+      errorType = "AUTH_FAILED";
+      friendly = `Gmail SMTP Authentication Failed (535 5.7.8): Google rejected the App Password or email address for '${config.user}'.\n\nFix steps:\n1. Enable 2-Step Verification at https://myaccount.google.com/security\n2. Generate a 16-character App Password at https://myaccount.google.com/apppasswords\n3. Ensure GMAIL_USER in .env.local is '${config.user}' (without extra prefixes)\n4. Restart the development server so changes take effect.`;
+    } else if (err?.code === "ETIMEDOUT" || err?.code === "ESOCKET" || errorMsg.includes("timeout")) {
+      errorType = "TIMEOUT";
+      friendly = `Connection to Gmail SMTP timed out. Please verify network connectivity.`;
+    }
+
     return {
       success: false,
-      error: `Error sending notification email: ${err?.message || "Internal mail service failure"}`,
+      errorType,
+      error: friendly,
+      details: {
+        submitterEmail: payload.email,
+        submitterDelivered: false,
+        adminEmail: config.admin,
+        adminDelivered: false,
+        simulated: false,
+      },
     };
   }
 }

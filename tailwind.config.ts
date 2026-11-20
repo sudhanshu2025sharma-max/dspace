@@ -9,20 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        academic: {
-          bg: "#F7F5F0",
+        dspace: {
+          DEFAULT: "#92C644", // Official DSpace brand green
+          hover: "#82B438",   // Darker green on hover
+          dark: "#6F9E2B",    // Rich brand green
+          light: "#F2F9E8",   // Soft tinted light green
+          tint: "#E5F4CE",    // Badge & pill light green
+          forest: "#1D3B1C",  // Deep green
+          navy: "#0C1B33",    // Deep DSpace/Lyrasis navy
+          "navy-surface": "#142646",
+          "navy-border": "#1F355E",
+          slate: "#1E293B",
+          muted: "#64748B",
+          border: "#E2E8F0",
+          bg: "#F8FAF8",      // Crisp clean conference background
           card: "#FFFFFF",
-          parchment: "#EFECE4",
-          border: "#E4DFD5",
-          ink: "#12201D",
-          charcoal: "#2A3835",
-          muted: "#5B6865",
-          accent: "#A24B27",
-          "accent-dark": "#883C1D",
-          "accent-light": "#FAECE6",
-          emerald: "#125740",
-          "emerald-light": "#E9F3EF",
-          "emerald-border": "#C4DFD5",
+          blue: "#006699",    // Classic DSpace tech blue
+          "blue-light": "#EBF5FB",
         },
       },
       fontFamily: {
@@ -37,6 +40,10 @@ const config: Config = {
           "sans-serif",
         ],
         mono: ["'SF Mono'", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
+      boxShadow: {
+        "dspace-sm": "0 2px 8px -2px rgba(146, 198, 68, 0.25)",
+        "dspace-md": "0 8px 24px -4px rgba(146, 198, 68, 0.3)",
       },
     },
   },

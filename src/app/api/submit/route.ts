@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: "Please fill in all required fields.",
+          message: "Please correct the highlighted errors in the form.",
           errors,
         },
         { status: 400 }
@@ -66,7 +66,11 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           submissionId,
-          message: mailResult.error || "Failed to dispatch email notifications.",
+          errorType: mailResult.errorType || "SEND_FAILED",
+          message:
+            mailResult.error ||
+            "Failed to dispatch email notifications. Check server mailer configuration.",
+          details: mailResult.details,
         },
         { status: 502 }
       );
@@ -76,10 +80,11 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         submissionId,
+        simulated: Boolean(mailResult.simulated),
         message: mailResult.simulated
-          ? "Poster proposal received! (Simulation mode: Set GMAIL_USER and GMAIL_APP_PASSWORD in environment variables to send live emails)."
-          : "Poster proposal submitted successfully! Confirmation email sent to your inbox and notification sent to admin.",
-        simulated: mailResult.simulated || false,
+          ? "Poster proposal received in local simulation mode. Gmail credentials are not configured, so live emails were skipped."
+          : `Poster proposal submitted successfully! A confirmation email has been sent to ${payload.email} and notification forwarded to the conference committee.`,
+        details: mailResult.details,
       },
       { status: 200 }
     );
@@ -89,6 +94,7 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         message: "An internal server error occurred while processing your submission.",
+        error: error?.message || String(error),
       },
       { status: 500 }
     );
