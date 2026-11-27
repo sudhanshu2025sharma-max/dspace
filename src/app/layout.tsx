@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "DSpace Jubilee International Conference 2026",
+  title: "Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU",
   description:
     "Commemorating more than two decades of open-source repository innovation, institutional preservation, and academic scholarship under Lyrasis community governance.",
   icons: {

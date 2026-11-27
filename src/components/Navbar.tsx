@@ -31,16 +31,8 @@ export const Navbar: React.FC = () => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-[#0C1B33] leading-tight">
-                DSpace Jubilee 2026
-              </span>
-              <span className="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE]">
-                Silver Jubilee
-              </span>
-            </div>
-            <span className="text-[11px] text-[#64748B] font-medium leading-tight">
-              International Conference on Open Repositories
+            <span className="font-serif font-bold text-xs sm:text-sm lg:text-[15px] tracking-tight text-[#0C1B33] leading-snug max-w-[230px] sm:max-w-md lg:max-w-none">
+              Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU
             </span>
           </div>
         </Link>

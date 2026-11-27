@@ -22,7 +22,7 @@ export const Footer: React.FC = () => {
                 />
               </div>
               <div className="font-serif font-bold text-base text-white">
-                {CONFERENCE.title} 2026
+                {CONFERENCE.title}
               </div>
             </div>
             <p className="max-w-sm text-[#94A3B8] leading-relaxed">

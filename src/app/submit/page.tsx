@@ -5,8 +5,8 @@ import { SubmissionForm } from "@/components/SubmissionForm";
 import { ArrowLeft, Info, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
-  title: "Poster Submission Portal | DSpace Jubilee Conference",
-  description: "Submit your poster proposal for the DSpace Jubilee Conference via Google Drive.",
+  title: "Poster Submission Portal | Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU",
+  description: "Submit your poster proposal for Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU via Google Drive.",
 };
 
 export default function SubmitPage() {

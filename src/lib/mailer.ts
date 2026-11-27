@@ -50,7 +50,8 @@ export function getSanitizedMailConfig() {
   const rawPass = process.env.GMAIL_APP_PASSWORD?.trim() || "";
   const rawAdmin = process.env.ADMIN_EMAIL?.trim() || "";
   const conferenceName =
-    process.env.CONFERENCE_NAME?.trim() || "DSpace Jubilee International Conference";
+    process.env.CONFERENCE_NAME?.trim() ||
+    "Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU";
 
   // Check if unconfigured or default placeholders
   const isUserPlaceholder =
@@ -302,7 +303,7 @@ export async function sendSubmissionEmails(
           </p>
         </div>
         <div class="foot">
-          DSpace Jubilee Celebration: Governed under Lyrasis
+          Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU: Governed under Lyrasis
         </div>
       </div>
     </body>
