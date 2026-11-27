@@ -36,9 +36,9 @@ export const NationalRepositoriesSection: React.FC = () => {
                 className="bg-white rounded-xl border border-[#E2E8F0] p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow"
               >
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0] gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE] flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-lg bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE] flex items-center justify-center flex-shrink-0">
                         {isShodhganga ? (
                           <Database className="w-4 h-4 text-[#6F9E2B]" />
                         ) : (
@@ -54,7 +54,7 @@ export const NationalRepositoriesSection: React.FC = () => {
                         </h3>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE]">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE] flex-shrink-0">
                       {repo.badge}
                     </span>
                   </div>
@@ -65,7 +65,7 @@ export const NationalRepositoriesSection: React.FC = () => {
 
                   <div className="space-y-2 pt-2">
                     <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0C1B33] block">
-                      Core DSpace Capabilities:
+                      {repo.capabilitiesTitle}
                     </span>
                     <div className="space-y-1.5">
                       {repo.highlights.map((h, i) => (
@@ -76,6 +76,24 @@ export const NationalRepositoriesSection: React.FC = () => {
                       ))}
                     </div>
                   </div>
+
+                  {repo.relatedItems && repo.relatedItems.length > 0 && (
+                    <div className="space-y-2 pt-3 border-t border-[#E2E8F0]">
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#0C1B33] block">
+                        {repo.relatedTitle}
+                      </span>
+                      <div className="space-y-1.5">
+                        {repo.relatedItems.map((rel, i) => (
+                          <div key={i} className="flex items-start gap-2 text-xs text-[#334155]">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#92C644] flex-shrink-0 mt-0.5" />
+                            <span>
+                              <strong className="text-[#0C1B33]">{rel.name}:</strong> {rel.desc}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-6 mt-6 border-t border-[#E2E8F0]">

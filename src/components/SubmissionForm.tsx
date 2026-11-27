@@ -13,9 +13,7 @@ import {
   Check,
   Info,
   Mail,
-  RefreshCw,
   ExternalLink,
-  ShieldCheck,
   AlertTriangle,
 } from "lucide-react";
 
@@ -33,16 +31,6 @@ interface SubmissionResponse {
     simulated?: boolean;
   };
   errors?: Record<string, string>;
-}
-
-interface MailCheckState {
-  checking: boolean;
-  checked: boolean;
-  verified: boolean;
-  simulated: boolean;
-  message: string;
-  user?: string;
-  admin?: string;
 }
 
 export const SubmissionForm: React.FC = () => {
@@ -68,16 +56,6 @@ export const SubmissionForm: React.FC = () => {
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
-
-  // Email diagnostic check state
-  const [mailCheck, setMailCheck] = useState<MailCheckState>({
-    checking: false,
-    checked: false,
-    verified: false,
-    simulated: false,
-    message: "",
-  });
-  const [showDiagnostic, setShowDiagnostic] = useState(false);
 
   // Auto-scroll to top prompt when promptMessage changes
   useEffect(() => {
@@ -131,35 +109,6 @@ export const SubmissionForm: React.FC = () => {
 
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
-  };
-
-  // Run real-time diagnostic check on Gmail configuration
-  const handleTestMailConfig = async () => {
-    setMailCheck((prev) => ({ ...prev, checking: true, message: "" }));
-    setShowDiagnostic(true);
-
-    try {
-      const res = await fetch("/api/check-email");
-      const data = await res.json();
-
-      setMailCheck({
-        checking: false,
-        checked: true,
-        verified: Boolean(data.verified),
-        simulated: Boolean(data.simulated),
-        message: data.message || (data.verified ? "Gmail verified" : "Failed to verify"),
-        user: data.user,
-        admin: data.admin,
-      });
-    } catch (err: any) {
-      setMailCheck({
-        checking: false,
-        checked: true,
-        verified: false,
-        simulated: false,
-        message: `Network error connecting to diagnostic check: ${err?.message || "Unknown"}`,
-      });
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -269,7 +218,6 @@ export const SubmissionForm: React.FC = () => {
     setSubmissionResult(null);
     setPromptMessage(null);
     setFieldErrors({});
-    setShowDiagnostic(false);
   };
 
   return (
@@ -485,79 +433,14 @@ export const SubmissionForm: React.FC = () => {
           onSubmit={handleSubmit}
           className="bg-white border border-[#E2E8F0] rounded-xl p-5 sm:p-7 shadow-xs space-y-4"
         >
-          <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
-            <div>
-              <h2 className="font-serif font-bold text-lg text-[#0C1B33]">
-                Poster Submission Form
-              </h2>
-              <p className="text-xs text-[#64748B]">
-                Provide author details, abstract, and your shareable Google Drive link.
-              </p>
-            </div>
-
-            {/* Quick Diagnostic Button */}
-            <button
-              type="button"
-              onClick={handleTestMailConfig}
-              disabled={mailCheck.checking}
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#475569] hover:text-[#0C1B33] bg-[#F8FAF8] hover:bg-[#F2F9E8] px-2.5 py-1.5 rounded-md border border-[#E2E8F0] hover:border-[#92C644] transition-colors"
-              title="Verify Gmail SMTP connection and credentials"
-            >
-              {mailCheck.checking ? (
-                <RefreshCw className="w-3 h-3 animate-spin text-[#92C644]" />
-              ) : (
-                <Mail className="w-3 h-3 text-[#92C644]" />
-              )}
-              <span>{mailCheck.checking ? "Checking..." : "Check Email Setup"}</span>
-            </button>
+          <div className="pb-3 border-b border-[#E2E8F0]">
+            <h2 className="font-serif font-bold text-lg text-[#0C1B33]">
+              Poster Submission Form
+            </h2>
+            <p className="text-xs text-[#64748B]">
+              Provide author details, abstract, and your shareable Google Drive link.
+            </p>
           </div>
-
-          {/* Diagnostic Result Box (when checked) */}
-          {showDiagnostic && mailCheck.checked && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className={`p-3 rounded-lg border text-xs space-y-1 ${
-                mailCheck.verified
-                  ? "bg-[#F2F9E8] border-[#92C644] text-[#2D5A27]"
-                  : mailCheck.simulated
-                  ? "bg-[#FFFBEB] border-[#F59E0B] text-[#B45309]"
-                  : "bg-[#FEF2F2] border-[#EF4444] text-[#B91C1C]"
-              }`}
-            >
-              <div className="flex items-center justify-between font-semibold">
-                <span className="flex items-center gap-1.5">
-                  {mailCheck.verified ? (
-                    <ShieldCheck className="w-4 h-4 text-[#92C644]" />
-                  ) : mailCheck.simulated ? (
-                    <AlertTriangle className="w-4 h-4 text-[#F59E0B]" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-[#EF4444]" />
-                  )}
-                  {mailCheck.verified
-                    ? "Gmail SMTP Service Active & Verified"
-                    : mailCheck.simulated
-                    ? "Email In Simulation Mode"
-                    : "Gmail Configuration Attention Required"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowDiagnostic(false)}
-                  className="text-[10px] underline uppercase"
-                >
-                  Dismiss
-                </button>
-              </div>
-              <p className="text-[11px] whitespace-pre-line leading-relaxed">
-                {mailCheck.message}
-              </p>
-              {mailCheck.user && (
-                <div className="text-[10px] font-mono opacity-80 pt-1">
-                  Active Gmail User: {mailCheck.user}
-                </div>
-              )}
-            </motion.div>
-          )}
 
           {/* 2-Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -12,7 +12,7 @@ export const PosterGuidelinesSection: React.FC = () => {
   const specs = [
     { label: "Dimensions", value: "ISO A0 Portrait", detail: "841 mm x 1189 mm (vertical only)" },
     { label: "Digital File", value: "Google Drive Share Link", detail: "PDF format, view access" },
-    { label: "Close Date", value: "September 30, 2026", detail: "Strict deadline at 23:59 UTC" },
+    { label: "Close Date", value: "December 20, 2026", detail: "Strict deadline at 23:59 UTC" },
     { label: "Evaluation", value: "Double-Blind Review", detail: "Peer reviewed by committee" },
   ];
 
@@ -22,7 +22,7 @@ export const PosterGuidelinesSection: React.FC = () => {
         {/* Section Header */}
         <div className="max-w-3xl space-y-3 mb-12">
           <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#6F9E2B] bg-[#F2F9E8] px-2.5 py-1 rounded border border-[#E5F4CE]">
-            Part 03: Call for Posters &amp; Submission
+            Call for Posters &amp; Submission
           </span>
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#0C1B33] tracking-tight">
             Poster Structure Details &amp; Guidelines
@@ -122,7 +122,7 @@ export const PosterGuidelinesSection: React.FC = () => {
           <div className="space-y-2 max-w-xl">
             <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#92C644] uppercase tracking-wider font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#92C644] animate-pulse" />
-              Submissions Open: Deadline September 30, 2026
+              Submissions Open: Deadline December 20, 2026
             </span>
             <h3 className="text-xl sm:text-2xl font-serif font-bold text-white">
               Proceed to the Poster Submission Portal

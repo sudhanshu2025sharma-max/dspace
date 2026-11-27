@@ -1,29 +1,11 @@
 export const CONFERENCE = {
-  title: "DSpace Jubilee Conference",
-  edition: "20 Year Anniversary Celebration",
-  dates: "November 18-20, 2026",
-  format: "Hybrid Assembly (Academic Center & Online)",
+  title: "Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU",
+  edition: "Silver Jubilee Celebration",
+  dates: "January 11, 2027",
+  format: "Ambedkar Convention Centre, IGNOU",
   contactEmail: "dspace-jubilee@lyrasis.org",
-  host: "Lyrasis & Global DSpace Community",
+  host: "IIIC 2026, IGNOU & Global DSpace Community",
 };
-
-export const HOW_DSPACE_WORKS = [
-  {
-    step: "01",
-    title: "Ingest & Dublin Core Metadata",
-    desc: "Scholars and libraries deposit research papers, theses, and datasets. DSpace captures standardized Dublin Core metadata, enforces submission workflows, and validates digital files.",
-  },
-  {
-    step: "02",
-    title: "Secure Bitstream Preservation",
-    desc: "Files are stored in managed bitstream asset stores with continuous cryptographic checksum verification (MD5/SHA) and assigned permanent persistent handles (hdl.handle.net) or DOIs.",
-  },
-  {
-    step: "03",
-    title: "Global Discovery & OAI-PMH Harvest",
-    desc: "Content is indexed in real-time and harvested worldwide via OAI-PMH, Google Scholar, OpenAIRE, and institutional research search engines for universal open access.",
-  },
-];
 
 export const NATIONAL_REPOSITORIES = [
   {
@@ -31,58 +13,42 @@ export const NATIONAL_REPOSITORIES = [
     name: "Shodhganga",
     subtitle: "INFLIBNET Centre, UGC (India)",
     description:
-      "India's national digital reservoir of electronic theses and dissertations (ETDs) submitted by research scholars across universities in India. Built entirely on DSpace, it provides open access to Ph.D. research to foster academic transparency and prevent research duplication.",
+      "Shodhganga is India's national open-access repository of Electronic Theses and Dissertations (ETDs), developed and maintained by the INFLIBNET Centre, an autonomous Inter-University Centre of the University Grants Commission (UGC). It provides a centralized platform through which Indian universities and other eligible higher education institutions can deposit, preserve, discover, and provide access to electronic theses and dissertations.",
     url: "https://shodhganga.inflibnet.ac.in/",
     badge: "National Theses Repository",
+    capabilitiesTitle: "Core DSpace Capabilities:",
     highlights: [
-      "Open access to full-text doctoral dissertations",
-      "Standardized Dublin Core metadata harvesting via OAI-PMH",
-      "Unified repository infrastructure for universities across India",
+      "Supports the UGC requirement for electronic submission of Ph.D. theses to INFLIBNET for hosting and access.",
+      "Built on DSpace, an open-source digital repository platform.",
+      "Uses a qualified Dublin Core metadata schema for describing ETD records.",
+      "Supports OAI-PMH (Open Archives Initiative Protocol for Metadata Harvesting) for metadata interoperability and harvesting.",
+      "Provides facilities for the capture, indexing, storage, dissemination, and preservation of electronic theses and dissertations.",
     ],
+
   },
   {
     id: "egyankosh",
     name: "eGyanKosh",
-    subtitle: "IGNOU (India)",
+    subtitle: "Indira Gandhi National Open University — IGNOU (India)",
     description:
-      "A national digital repository developed by Indira Gandhi National Open University (IGNOU) to store, index, and share digital learning resources developed by open and distance learning institutions across India. Built on DSpace, it delivers educational materials to millions of students.",
+      "A national digital repository developed and maintained by IGNOU to store, index, preserve, distribute, and share digital learning resources developed by Open and Distance Learning (ODL) institutions. It provides access to IGNOU's Self-Learning Materials (SLMs), audio programmes, video lectures, and other digital educational resources through a structured repository of communities and collections.",
     url: "https://egyankosh.ac.in/",
-    badge: "Open Learning Repository",
+    badge: "National Digital Repository",
+    capabilitiesTitle: "Core Repository Capabilities:",
     highlights: [
-      "Digital self-instructional study materials and course units",
-      "Audio-video educational repositories and lecture archives",
-      "Accessible open learning infrastructure across disciplines",
+      "Centralized repository of Self-Learning Materials (SLMs), organized by schools, programmes, courses, and blocks/units.",
+      "Audio and video educational resources, including recorded lectures and other multimedia learning materials.",
+      "Structured community and collection-based browsing, supporting organized discovery and access to educational resources.",
+      "Search, browse, download, and access facilities for a large body of digital learning resources.",
+      "Supports preservation and dissemination of digital learning resources within the Open and Distance Learning ecosystem.",
     ],
-  },
-];
-
-export const ORGANIZERS = [
-  {
-    name: "Dr. Eleanor Vance",
-    role: "Conference General Chair",
-    org: "European Repositories Consortium",
-  },
-  {
-    name: "Prof. Rajeshwar Sundaram",
-    role: "Program Committee Chair",
-    org: "Open Science Forum",
-  },
-  {
-    name: "Kathryn Chen",
-    role: "Repository Systems Lead",
-    org: "MIT Libraries",
-  },
-  {
-    name: "Sheila O'Connor",
-    role: "Community Governance Liaison",
-    org: "Lyrasis",
   },
 ];
 
 export const POSTER_GUIDELINES = {
   format: "ISO A0 Portrait (841 mm x 1189 mm / 33.1 in x 46.8 in)",
   submissionType: "Google Drive Shareable Link (PDF format)",
-  deadline: "September 30, 2026",
+  deadline: "December 20, 2026",
   sections: [
     {
       num: "01",

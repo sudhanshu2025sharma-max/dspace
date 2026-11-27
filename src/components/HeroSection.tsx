@@ -1,141 +1,149 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowRight, FileText, Globe2, Award, Shield } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, ArrowRight, FileText } from "lucide-react";
 import { CONFERENCE } from "@/lib/conference-data";
 
+const HERO_BG_IMAGES = [
+  { src: "/heroImage/Shodhganga.png", alt: "Shodhganga — INFLIBNET" },
+  { src: "/heroImage/egyanKosh.png", alt: "eGyanKosh — IGNOU" },
+  { src: "/heroImage/iitdIR.png", alt: "IIT Delhi Institutional Repository" },
+  { src: "/heroImage/krishikosh.png", alt: "KrishiKosh — ICAR" },
+];
+
 export const HeroSection: React.FC = () => {
+  const [activeBg, setActiveBg] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveBg((prev) => (prev + 1) % HERO_BG_IMAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <section className="relative bg-[#0C1B33] text-white py-20 md:py-28 dark-grid-pattern border-b border-[#1F355E] overflow-hidden">
-      {/* Subtle ambient green glow behind hero */}
-      <div className="absolute top-1/4 right-10 w-96 h-96 bg-[#92C644]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 left-10 w-80 h-80 bg-[#006699]/15 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-8 space-y-6">
-            {/* Milestone Tag */}
+    <section className="relative bg-[#0C1B33] text-white py-12 md:py-16 dark-grid-pattern border-b border-[#1F355E] overflow-hidden">
+      {/* Full-height Right-aligned Background Image */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden flex justify-end">
+        <div className="relative w-full lg:w-[60%] h-full">
+          <AnimatePresence mode="wait">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#142646] border border-[#1F355E] text-xs font-mono font-medium tracking-wide"
+              key={HERO_BG_IMAGES[activeBg].src}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45, ease: "easeInOut" }}
+              className="absolute inset-0"
             >
-              <span className="w-2 h-2 rounded-full bg-[#92C644] animate-pulse" />
-              <span className="text-[#E2E8F0]">DSpace Jubilee Commemoration</span>
-              <span className="text-[#92C644] font-bold">2002–2026</span>
+              <Image
+                src={HERO_BG_IMAGES[activeBg].src}
+                alt={HERO_BG_IMAGES[activeBg].alt}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-contain object-right opacity-30 sm:opacity-50 lg:opacity-100"
+              />
             </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
 
-            {/* Title */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="space-y-4"
+      {/* Foreground Content: balanced margin, compact width so it stays clear of the image */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 relative z-10">
+        {/* Text Block with dark navy grid backdrop */}
+        <div className="w-full max-w-md xl:max-w-[480px] bg-[#0C1B33]/90 dark-grid-pattern backdrop-blur-md border border-[#1F355E]/80 rounded-xl p-5 sm:p-6 shadow-2xl space-y-4">
+          {/* Milestone Tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#142646] border border-[#1F355E] text-[11px] font-mono font-medium tracking-wide"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#92C644] animate-pulse" />
+            <span className="text-[#E2E8F0]">DSpace Silver Jubilee</span>
+            <span className="text-[#92C644] font-bold">IIIC 2026, IGNOU</span>
+          </motion.div>
+
+          {/* Title & Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.08 }}
+            className="space-y-2.5"
+          >
+            <h1 className="text-2xl sm:text-3xl xl:text-[34px] font-serif font-bold text-white tracking-tight leading-[1.18]">
+              Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU
+            </h1>
+            <p className="text-xs sm:text-[13px] text-[#CBD5E1] leading-relaxed font-normal">
+              Celebrating open-source repository innovation, institutional digital preservation, and open access scholarship under Lyrasis community governance.
+            </p>
+          </motion.div>
+
+          {/* Key Date & Venue Metadata */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.16 }}
+            className="flex flex-wrap gap-2 text-[11px] text-white"
+          >
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#142646] border border-[#1F355E]">
+              <Calendar className="w-3.5 h-3.5 text-[#92C644]" />
+              <span className="font-semibold">{CONFERENCE.dates}</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#142646] border border-[#1F355E]">
+              <MapPin className="w-3.5 h-3.5 text-[#92C644]" />
+              <span className="text-[#E2E8F0]">{CONFERENCE.format}</span>
+            </div>
+          </motion.div>
+
+          {/* Action CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.24 }}
+            className="flex flex-wrap items-center gap-2.5 pt-1"
+          >
+            <Link
+              href="/submit"
+              className="inline-flex items-center gap-2 bg-[#92C644] hover:bg-[#82B438] text-[#0C1B33] text-xs font-bold px-4 py-2.5 rounded-md transition-all shadow-dspace-sm hover:shadow-dspace-md"
             >
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-white tracking-tight leading-[1.12]">
-                International Conference on the Jubilee Celebration of DSpace
-              </h1>
-              <p className="text-base sm:text-lg text-[#CBD5E1] leading-relaxed font-normal max-w-2xl">
-                Commemorating more than twenty years of open-source repository innovation, sovereign institutional preservation, and worldwide open science scholarship under Lyrasis community governance.
-              </p>
-            </motion.div>
-
-            {/* Key Dates & Venue Metadata */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap gap-3 pt-1 text-xs text-white"
+              <FileText className="w-3.5 h-3.5 text-[#0C1B33]" />
+              <span>Submit Your Poster</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#0C1B33]" />
+            </Link>
+            <Link
+              href="#poster-guidelines"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-white hover:text-[#92C644] px-3.5 py-2.5 rounded-md border border-[#1F355E] bg-[#142646]/90 hover:bg-[#142646] transition-colors"
             >
-              <div className="flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#142646] border border-[#1F355E]">
-                <Calendar className="w-4 h-4 text-[#92C644]" />
-                <span className="font-semibold">{CONFERENCE.dates}</span>
-              </div>
-              <div className="flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#142646] border border-[#1F355E]">
-                <MapPin className="w-4 h-4 text-[#92C644]" />
-                <span className="text-[#E2E8F0]">{CONFERENCE.format}</span>
-              </div>
-            </motion.div>
+              <span>Poster Guidelines</span>
+            </Link>
+          </motion.div>
+        </div>
 
-            {/* Action CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-4 pt-3"
-            >
-              <Link
-                href="/submit"
-                className="inline-flex items-center gap-2 bg-[#92C644] hover:bg-[#82B438] text-[#0C1B33] text-sm font-bold px-6 py-3.5 rounded-md transition-all shadow-dspace-sm hover:shadow-dspace-md hover:-translate-y-0.5"
-              >
-                <FileText className="w-4 h-4 text-[#0C1B33]" />
-                <span>Submit Your Poster</span>
-                <ArrowRight className="w-4 h-4 text-[#0C1B33]" />
-              </Link>
-              <Link
-                href="#poster-guidelines"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-[#92C644] px-5 py-3.5 rounded-md border border-[#1F355E] bg-[#142646]/80 hover:bg-[#142646] transition-colors"
-              >
-                <span>Poster Structure &amp; Guidelines</span>
-              </Link>
-            </motion.div>
-          </div>
+        {/* Bottom bar: Featured Repository label & slide dots */}
+        <div className="mt-6 pt-3 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-[11px] font-mono text-[#CBD5E1] bg-[#0C1B33]/80 px-2.5 py-1 rounded">
+            Featured Repository:{" "}
+            <strong className="text-[#92C644]">{HERO_BG_IMAGES[activeBg].alt}</strong>
+          </span>
 
-          {/* Right Column: Hero Graphic / DSpace Jubilee Badge Card */}
-          <div className="lg:col-span-4 hidden lg:block">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-[#142646]/90 border border-[#1F355E] rounded-xl p-7 shadow-2xl relative overflow-hidden backdrop-blur-sm"
-            >
-              <div className="flex items-center gap-4 pb-5 border-b border-[#1F355E]">
-                <div className="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center shadow-md">
-                  <Image
-                    src="/dspace-logo.png"
-                    alt="DSpace Logo"
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div>
-                  <div className="text-xs font-mono text-[#92C644] font-bold uppercase tracking-wider">
-                    Jubilee Edition
-                  </div>
-                  <div className="font-serif font-bold text-lg text-white">
-                    20+ Years of DSpace
-                  </div>
-                  <div className="text-[11px] text-[#94A3B8]">
-                    Global Open Access Milestone
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats Highlights */}
-              <div className="space-y-3.5 pt-5 text-xs">
-                <div className="flex items-center justify-between p-2.5 rounded bg-[#0C1B33]/60 border border-[#1F355E]">
-                  <span className="text-[#94A3B8]">Global Deployments</span>
-                  <span className="font-mono font-bold text-[#92C644]">3,000+ Repositories</span>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded bg-[#0C1B33]/60 border border-[#1F355E]">
-                  <span className="text-[#94A3B8]">Worldwide Reach</span>
-                  <span className="font-mono font-bold text-white">100+ Countries</span>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded bg-[#0C1B33]/60 border border-[#1F355E]">
-                  <span className="text-[#94A3B8]">Governance</span>
-                  <span className="font-mono font-bold text-white">Lyrasis Stewardship</span>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded bg-[#0C1B33]/60 border border-[#1F355E]">
-                  <span className="text-[#94A3B8]">Review Standard</span>
-                  <span className="font-mono font-bold text-[#92C644]">Double-Blind Peer Review</span>
-                </div>
-              </div>
-            </motion.div>
+          <div className="flex items-center gap-1.5 bg-[#0C1B33]/80 px-2.5 py-1.5 rounded-full" aria-label="Background showcase slides">
+            {HERO_BG_IMAGES.map((img, idx) => (
+              <button
+                key={img.src}
+                type="button"
+                onClick={() => setActiveBg(idx)}
+                aria-label={`Show ${img.alt}`}
+                className={`h-1.5 rounded-full transition-all ${
+                  activeBg === idx
+                    ? "w-6 bg-[#92C644]"
+                    : "w-2 bg-[#475569] hover:bg-[#94A3B8]"
+                }`}
+              />
+            ))}
           </div>
         </div>
       </div>

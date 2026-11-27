@@ -68,6 +68,7 @@ export function getSanitizedMailConfig() {
       user: "",
       pass: "",
       admin: "",
+      adminEmails: [] as string[],
       conferenceName,
       warning: undefined,
     };
@@ -86,15 +87,24 @@ export function getSanitizedMailConfig() {
     warning = "Auto-corrected 'your-' prefix from GMAIL_USER.";
   }
 
-  // Auto-clean accidental 'admin-' prefix in ADMIN_EMAIL if it's an email address
-  let admin = rawAdmin || user;
-  if (admin.toLowerCase().startsWith("admin-") && admin.includes("@")) {
-    const cleaned = admin.replace(/^admin-/i, "");
-    console.warn(
-      `[MAILER] Auto-sanitized ADMIN_EMAIL from '${admin}' to '${cleaned}'. Update your .env.local to remove 'admin-'.`
-    );
-    admin = cleaned;
-  }
+  // Support multiple comma-separated admin emails & auto-clean accidental 'admin-' prefix
+  const parsedAdmins = (rawAdmin || user)
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      if (entry.toLowerCase().startsWith("admin-") && entry.includes("@")) {
+        const cleaned = entry.replace(/^admin-/i, "");
+        console.warn(
+          `[MAILER] Auto-sanitized ADMIN_EMAIL from '${entry}' to '${cleaned}'. Update your .env.local to remove 'admin-'.`
+        );
+        return cleaned;
+      }
+      return entry;
+    });
+
+  const adminEmails = parsedAdmins.length > 0 ? Array.from(new Set(parsedAdmins)) : [user];
+  const admin = adminEmails.join(", ");
 
   // Remove whitespace from 16-character Google App Password
   const pass = rawPass.replace(/\s+/g, "");
@@ -104,6 +114,7 @@ export function getSanitizedMailConfig() {
     user,
     pass,
     admin,
+    adminEmails,
     conferenceName,
     warning,
   };
@@ -287,7 +298,7 @@ export async function sendSubmissionEmails(
           <p style="white-space: pre-wrap; font-size: 13px; color: #5B6865; background: #F7F5F0; padding: 12px; border-radius: 4px; border-left: 3px solid #A24B27;">${payload.abstract}</p>
 
           <p style="margin-top: 20px; font-size: 12px; color: #5B6865;">
-            The Program Committee will evaluate your proposal. If you need to update your poster PDF, simply update your file in Google Drive before the submission deadline (September 30, 2026).
+            The Program Committee will evaluate your proposal. If you need to update your poster PDF, simply update your file in Google Drive before the submission deadline (December 20, 2026).
           </p>
         </div>
         <div class="foot">
@@ -346,17 +357,17 @@ export async function sendSubmissionEmails(
     const subInfo = await transporter.sendMail({
       from: `"${config.conferenceName}" <${config.user}>`,
       to: payload.email,
-      replyTo: config.admin,
+      replyTo: config.adminEmails[0] || config.user,
       subject: `[${config.conferenceName}] Poster Submission Received: Ref ${payload.submissionId}`,
       html: submitterHtml,
     });
 
-    // Dispatch Admin Notification Email
+    // Dispatch Admin Notification Email to all configured admin recipients
     let adminInfoMessageId: string | undefined = undefined;
     try {
       const adminInfo = await transporter.sendMail({
         from: `"${config.conferenceName} Portal" <${config.user}>`,
-        to: config.admin,
+        to: config.adminEmails,
         replyTo: payload.email,
         subject: `[Admin Alert] Poster Submission: ${payload.submissionId} - "${payload.title}"`,
         html: adminHtml,

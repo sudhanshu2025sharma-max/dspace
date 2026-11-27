@@ -43,7 +43,7 @@ export default function SubmitPage() {
           </div>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono text-[#6F9E2B] bg-[#F2F9E8] border border-[#E5F4CE] font-bold self-start sm:self-center">
             <span className="w-1.5 h-1.5 rounded-full bg-[#92C644] animate-pulse" />
-            Deadline: Sept 30, 2026
+            Deadline: Dec 20, 2026
           </span>
         </div>
 

@@ -11,9 +11,7 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/#about-dspace", label: "About DSpace" },
     { href: "/#national-repositories", label: "Shodhganga & eGyanKosh" },
-    { href: "/#conference", label: "The Conference" },
     { href: "/#poster-guidelines", label: "Poster Guidelines" },
   ];
 
@@ -38,7 +36,7 @@ export const Navbar: React.FC = () => {
                 DSpace Jubilee 2026
               </span>
               <span className="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-[#F2F9E8] text-[#6F9E2B] border border-[#E5F4CE]">
-                20 Years
+                Silver Jubilee
               </span>
             </div>
             <span className="text-[11px] text-[#64748B] font-medium leading-tight">
@@ -47,22 +45,21 @@ export const Navbar: React.FC = () => {
           </div>
         </Link>
 
-        {/* Desktop Links */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#475569]">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="hover:text-[#0C1B33] hover:text-[#6F9E2B] transition-colors py-1 relative group"
-            >
-              <span>{link.label}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#92C644] transition-all group-hover:w-full" />
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Links & Action Button shifted to right */}
+        <div className="hidden md:flex items-center gap-7">
+          <nav className="flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-[#475569]">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="hover:text-[#0C1B33] hover:text-[#6F9E2B] transition-colors py-1 relative group"
+              >
+                <span>{link.label}</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#92C644] transition-all group-hover:w-full" />
+              </Link>
+            ))}
+          </nav>
 
-        {/* Action Button */}
-        <div className="hidden md:flex items-center gap-3">
           {pathname !== "/submit" ? (
             <Link
               href="/submit"
