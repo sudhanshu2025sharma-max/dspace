@@ -3,7 +3,6 @@ export const CONFERENCE = {
   edition: "Silver Jubilee Celebration",
   dates: "January 11, 2027",
   format: "Ambedkar Convention Centre, IGNOU",
-  contactEmail: "dspace-jubilee@lyrasis.org",
   host: "IIIC 2026, IGNOU & Global DSpace Community",
 };
 

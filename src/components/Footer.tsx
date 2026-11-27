@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink } from "lucide-react";
 import { CONFERENCE } from "@/lib/conference-data";
 
 export const Footer: React.FC = () => {
@@ -28,11 +28,13 @@ export const Footer: React.FC = () => {
             <p className="max-w-sm text-[#94A3B8] leading-relaxed">
               Commemorating more than two decades of open-source repository innovation. Governed under the non-profit stewardship of Lyrasis.
             </p>
-            <div className="flex items-center gap-2 text-white font-medium pt-1">
-              <Mail className="w-3.5 h-3.5 text-[#92C644]" />
-              <a href={`mailto:${CONFERENCE.contactEmail}`} className="hover:text-[#92C644] transition-colors">
-                {CONFERENCE.contactEmail}
-              </a>
+            <div className="flex items-start gap-2 text-white font-medium pt-1">
+              <MapPin className="w-3.5 h-3.5 text-[#92C644] flex-shrink-0 mt-0.5" />
+              <address className="not-italic leading-relaxed text-[#CBD5E1]">
+                IGNOU<br />
+                Maidan Garhi,<br />
+                New Delhi-110068
+              </address>
             </div>
           </div>
 
