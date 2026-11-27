@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-[#0C1B33] text-[#94A3B8] py-14 text-xs border-t border-[#1F355E]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#1F355E]">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Identity with DSpace Logo */}
           <div className="space-y-3 md:col-span-2">
             <div className="flex items-center gap-2.5">
@@ -113,16 +113,6 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
             </ul>
-          </div>
-        </div>
-
-        {/* Lower Attribution */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#64748B]">
-          <div>
-            &copy; {new Date().getFullYear()} DSpace Community and Lyrasis. All rights reserved.
-          </div>
-          <div>
-            DSpace is released under the BSD 3-Clause Open Source License.
           </div>
         </div>
       </div>
