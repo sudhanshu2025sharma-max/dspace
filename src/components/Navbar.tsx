@@ -32,7 +32,7 @@ export const Navbar: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-serif font-bold text-xs sm:text-sm lg:text-[15px] tracking-tight text-[#0C1B33] leading-snug max-w-[230px] sm:max-w-md lg:max-w-none">
-              Celebration of Silver Jubilee of DSpace in IIIC 2026, IGNOU
+              Silver Jubilee of DSpace
             </span>
           </div>
         </Link>
