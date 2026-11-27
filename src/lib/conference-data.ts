@@ -7,7 +7,20 @@ export const CONFERENCE = {
   host: "IIIC 2026, IGNOU & Global DSpace Community",
 };
 
-export const NATIONAL_REPOSITORIES = [
+export interface NationalRepository {
+  id: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  url: string;
+  badge: string;
+  capabilitiesTitle: string;
+  highlights: string[];
+  relatedTitle?: string;
+  relatedItems?: { name: string; desc: string }[];
+}
+
+export const NATIONAL_REPOSITORIES: NationalRepository[] = [
   {
     id: "shodhganga",
     name: "Shodhganga",
