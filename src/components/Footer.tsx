@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, ExternalLink } from "lucide-react";
+import { Globe, Mail, ExternalLink } from "lucide-react";
 import { CONFERENCE } from "@/lib/conference-data";
 
 export const Footer: React.FC = () => {
@@ -28,13 +28,40 @@ export const Footer: React.FC = () => {
             <p className="max-w-sm text-[#94A3B8] leading-relaxed">
               Commemorating more than two decades of open-source repository innovation. Governed under the non-profit stewardship of Lyrasis.
             </p>
-            <div className="flex items-start gap-2 text-white font-medium pt-1">
-              <MapPin className="w-3.5 h-3.5 text-[#92C644] flex-shrink-0 mt-0.5" />
-              <address className="not-italic leading-relaxed text-[#CBD5E1]">
-                IGNOU<br />
-                Maidan Garhi,<br />
-                New Delhi-110068
-              </address>
+            <div className="space-y-1.5 pt-1">
+              <div className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#92C644]">
+                Organised By:
+              </div>
+              <div className="text-[#CBD5E1] leading-relaxed">
+                <div>Faculty of Library &amp; Information Science</div>
+                <div>School of Social Sciences (SOSS)</div>
+                <div>Indira Gandhi National Open University (IGNOU)</div>
+                <div>Maidan Garhi, New Delhi - 110068 (India)</div>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[#CBD5E1]">
+                <span className="inline-flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-[#92C644]" />
+                  <span>Website:</span>
+                  <a
+                    href="https://www.ignou.ac.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white hover:text-[#92C644] underline transition-colors"
+                  >
+                    www.ignou.ac.in
+                  </a>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-[#92C644]" />
+                  <span>Email:</span>
+                  <a
+                    href="mailto:iiic2027@ignou.ac.in"
+                    className="text-white hover:text-[#92C644] underline transition-colors"
+                  >
+                    iiic2027@ignou.ac.in
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
 
